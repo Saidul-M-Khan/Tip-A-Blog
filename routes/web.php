@@ -31,19 +31,24 @@ Route::controller( UserController::class )->group( function () {
     Route::get( '/forget-password', 'SendOTPToEmailPage' );
     Route::get( '/verify-otp', 'VerifyOTPPage' );
     Route::get( '/reset-password', 'ResetPasswordPage' );
+
     // Logic
     Route::post( '/UserSignup', 'UserSignup' );
     Route::post( '/UserLogin', 'UserLogin' );
     Route::post( '/SendOTPToEmail', 'SendOTPToEmail' );
     Route::post( '/VerifyOTP', 'VerifyOTP' );
     Route::post( '/ResetPassword', 'ResetPassword' )->middleware([TokenVerificationMiddleware::class]);
-    Route::get( '/ProfileUpdate', 'ProfileUpdate' );
+    Route::get( '/UserLogout', 'UserLogout' );
+
     /* User Control */
     Route::get( '/users', 'getUsers' ); // Read All Users
     Route::get( '/user/{userId}', 'getUserById' ); // Read User By ID
     Route::post( '/user/create', 'addUser' ); // Create User
     Route::post( '/user/{userId}/update', 'updateUser' ); // Update User
     Route::get( '/user/{userId}/delete', 'deleteUser' ); // Delete User
+
+    // Dashboard
+    Route::get('/dashboard', 'UserDashboardPage')->middleware([TokenVerificationMiddleware::class]);
 } );
 
 // Profiles
@@ -88,3 +93,5 @@ Route::controller( CommentController::class )->group( function () {
     Route::post( 'comment/{commentId}/update', 'updateComment' ); // Update Comment
     Route::get( '/comment/{commentId}/delete', 'deleteComment' ); // Delete Comment
 } );
+
+

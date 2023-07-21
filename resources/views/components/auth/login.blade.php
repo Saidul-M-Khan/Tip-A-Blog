@@ -123,7 +123,7 @@
 
             if (result.status === 200 && result.data["status"] === "success") {
                 successToast(result.data["message"]);
-                window.location.href = "/blogs";
+                window.location.href = "/dashboard";
             } else {
                 errorToast(result.data["message"]);
             }

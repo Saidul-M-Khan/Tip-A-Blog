@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Cookie;
 
 class UserController extends Controller {
     // Pages
@@ -30,6 +31,10 @@ class UserController extends Controller {
 
     function ResetPasswordPage():View {
         return view( 'pages.auth.reset-password' );
+    }
+
+    function UserDashboardPage():View {
+        return view( 'pages.dashboard.dashboard' );
     }
 
     // Logic
@@ -54,18 +59,17 @@ class UserController extends Controller {
     }
 
     function UserLogin( Request $request ) {
-        $userCount = User::where( 'email', '=', $request->input( 'email' ) )
+        $count = User::where( 'email', '=', $request->input( 'email' ) )
             ->where( 'password', '=', $request->input( 'password' ) )
-            ->count();
+            ->select('id')->first();
 
-        if ( $userCount == 1 ) {
+        if ( $count !== null ) {
             // Issue JWT Token
-            $token = JWTToken::CreateToken( $request->input( 'email' ) );
+            $token = JWTToken::CreateToken( $request->input( 'email' ), $count->id );
             return response()->json( array(
                 'status'  => 'success',
-                'message' => 'User Login Successful',
-                'token'   => $token,
-            ), 200 );
+                'message' => 'User Login Successful'
+            ), 200 )->cookie('token', $token, 60*60*24);
         } else {
             return response()->json( array(
                 'status'  => 'error',
@@ -110,7 +114,7 @@ class UserController extends Controller {
             User::where( 'email', '=', $email )
                 ->update( array( 'otp' => '0' ) );
             // Issue a token to reset password
-            $token = JWTToken::CreateTokenForResetPassword( $email );
+            $token = JWTToken::CreateTokenForResetPassword( $request->input('email') );
             return response()->json( array(
                 'status'  => 'success',
                 'message' => 'OTP Verification Successful'
@@ -138,6 +142,11 @@ class UserController extends Controller {
                 'message' => 'Password Reset Failed',
             ), 401 );
         }
+    }
+
+    function UserLogout(){
+        return redirect('/login')->cookie('token', '', -1);
+        // return Cookie::forget('token');
     }
 
     // User Control

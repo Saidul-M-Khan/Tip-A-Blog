@@ -12,8 +12,8 @@ return new class extends Migration {
         Schema::create( 'profiles', function ( Blueprint $table ) {
             $table->id();
             $table->unsignedBigInteger( 'user_id' );
-            $table->string( 'bio', '300' );
-            $table->text( 'image' );
+            $table->string( 'bio', '300' )->nullable();
+            $table->text( 'image' )->nullable();
             $table->timestamp( 'created_at' )->useCurrent();
             $table->timestamp( 'updated_at' )->useCurrent()->useCurrentOnUpdate();
 
